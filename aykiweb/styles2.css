@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+    overflow: hidden;
+  }
+  
+  .draggable {
+    position: absolute;
+    cursor: grab;
+  }
+  
+  .target {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #e74c3c;
+    background-color: #f39c12;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .success-message {
+    display: none;
+    color: #27ae60;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perguntas iniciantes</title>
+    <style>/* GERAL */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+        }
+        
+        body {
+          background-color: #ffffff;
+          color: #ffffff;
+        }
+        
+        a {
+          color: #ffffff;
+          text-decoration: none;
+          transition: 0.5s;
+        }
+        
+        a:hover {
+          color: #00c9c8;
+        }
+        
+        textarea:focus,
+        input:focus,
+        select:focus,
+        button:focus {
+          box-shadow: 0 0 0 0;
+          border: 0 none;
+          outline: 0;
+        }
+        
+        .container {
+          display: grid;
+          grid-template-areas:
+            'header'
+            'main'
+            'footer';
+          position: relative;
+          height: 100vh;
+        }
+        
+        header,
+        main,
+        footer {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        header,
+        footer {
+          width: 100%;
+          height: 100px;
+          padding: 30px 0;
+          background-color: #2a272a;
+        }
+        main {
+          grid-area: main;
+          margin-top: 20px;
+          margin-bottom: 140px;
+        }
+        .hide {
+          display: none !important;
+        }
+        
+        /* SCORE CONTAINER */
+        #quizz-container,
+        #score-container {
+          color: #222222;
+          text-align: center;
+          padding: 25px;
+          border: 4px solid #000000;
+        }
+        
+        #quizz-container,
+        #score-container {
+          width: 500px;
+          max-width: 90%;
+        }
+        
+        #score-container p {
+          margin: 20px 0;
+        }
+        
+        #score-container #display-score {
+          font-size: 32px;
+          font-weight: bold;
+        }
+        #questions-qty {
+          font-weight: bold;
+          color: #ffa30e;
+        }
+        
+        #restart {
+          background-color: #ffa30e;
+          color: #fff;
+          font-weight: bold;
+          height: 50px;
+          border-radius: 5px;
+          border: 1px solid #e0e0e0;
+          width: 180px;
+          text-transform: uppercase;
+          margin-top: 20px;
+          cursor: pointer;
+          transition: 0.5s;
+        }
+        
+        #restart:hover {
+          background-color: #2a272a;
+          color: #ffffff;
+        }
+        #question {
+          text-align: center;
+          margin-bottom: 25px;
+          font-size: 20px;
+          color: #222222;
+          font-weight: bold;
+        }
+        
+        #answers-box button {
+          display: flex;
+          align-items: stretch;
+          margin: 15px 0;
+          width: 100%;
+          border: none;
+          text-align: left;
+          color: #222222;
+          cursor: pointer;
+          transition: 0.5s;
+        }
+        
+        #answers-box button:hover {
+          background-color: #2a272a;
+          color: #fff;
+        }
+        
+        #answers-box .btn-letter {
+          font-size: 30px;
+          font-weight: bold;
+          background-color: #2a272a;
+          border: none;
+          color: #fff;
+          text-transform: uppercase;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex: 1 1 0;
+          padding: 5px;
+          max-width: 45px;
+        }
+        
+        .question-answer {
+          flex: 1 1 0;
+          display: flex;
+          padding: 10px 0;
+          align-items: center;
+          margin-left: 10px;
+          font-size: 16px;
+        }
+        
+        #quizz-container .wrong-answer,
+        #quizz-container .wrong-answer .btn-letter {
+          color: #fff;
+          border: none;
+        }
+        
+        #quizz-container .correct-answer,
+        #quizz-container .correct-answer .btn-letter {
+          background-color: #2eb94c;
+          color: #fff;
+          border: none;
+        }
+        
+        @media (max-width: 450px) {
+          #quizz-container,
+          #score-container {
+            border: none;
+            width: 100%;
+            box-shadow: none;
+          }
+        }
+        </style>
+    
+  </head>
+  <body>
+    
+    <div class="container">
+      <main>
+        <div id="quizz-container">
+          <p id="question">
+            <span id="question-number">1</span> &#8212;
+            <span id="question-text">Qual é a unidade de medida para metros?</span>
+          </p>
+          <div id="timer">02:00</div>
+          <div id="answers-box">
+            <button><span class="btn-letter"></span> <span class="question-answer"></span></button>
+            <button><span class="btn-letter"></span> <span class="question-answer"></span></button>
+            <button><span class="btn-letter"></span> <span class="question-answer"></span></button>
+            <button><span class="btn-letter"></span> <span class="question-answer"></span></button>
+          </div>
+        </div>
+        <div id="score-container" class="hide">
+          <h2>Parabéns</h2>
+          <p id="display-score"><span>90</span>%</p>
+          <p>
+            Você acertou <span id="correct-answers">0</span> de
+            <span id="questions-qty">10</span> perguntas
+          </p>
+          <a href="indexfinal.html"><button id="restart">Proximo desafio</button></a>
+        </div>
+        <button class="answer-template hide">
+          <span class="btn-letter"></span> <span class="question-answer"></span>
+        </button>
+      </main>
+    </div>
+    <script>
+        const question = document.querySelector('#question');
+        const answerBox = document.querySelector('#answers-box');
+        const quizzContainer = document.querySelector('#quizz-container');
+        const scoreContainer = document.querySelector('#score-container');
+        const letters = ['a', 'b', 'c', 'd', 'e'];
+        let points = 0;
+        let actualQuestion = 0;
+        
+        // perguntas
+        const questions = [
+          {
+            question: 'Quando o canal das Aykikards foi criado?',
+            answers: [
+              {
+                answer: '2018',
+                correct: false,
+              },
+              {
+                answer: '2017',
+                correct: false,
+              },
+              {
+                answer: '2019',
+                correct: true,
+              },
+              {
+                answer: '2020',
+                correct: false,
+              },
+            ],
+          },
+          {
+            question: 'O que acontece quando um Phd corta à arvore em sua cabeça?',
+            answers: [
+              {
+                answer: 'Vira um Aptot',
+                correct: true,
+              },
+              {
+                answer: 'Fica calvo',
+                correct: false,
+              },
+              {
+                answer: 'Se transforma em puddim',
+                correct: false,
+              },
+              {
+                answer: 'Ele morre na hora',
+                correct: false,
+              },
+            ],
+          },
+          {
+            question: 'A jóia do tempo é?',
+            answers: [
+              {
+                answer: 'Uma das jóias do infinito',
+                correct: false,
+              },
+              {
+                answer: 'Fragmento da alma do tempo',
+                correct: true,
+              },
+              {
+                answer: 'É a arma que derrotou o 021 Existencia',
+                correct: false,
+              },
+              {
+                answer: 'O coração do deus sol',
+                correct: false,
+              },
+            ],
+          },
+          {
+            question: 'De quem é a culpa da invasão Titan?',
+            answers: [
+              {
+                answer: 'Os tuxs',
+                correct: false,
+              },
+              {
+                answer: 'Cocozitos',
+                correct: false,
+              },
+              {
+                answer: 'Oroboroboro',
+                correct: true,
+              },
+              {
+                answer: 'Portal do paraíso',
+                correct: false,
+              },
+            ],
+          },
+          {
+            question: 'Qual tipo de carta que é semelhante as cartas reis?',
+            answers: [
+              {
+                answer: 'Encantamentos',
+                correct: false,
+              },
+              {
+                answer: 'Cartas do caos',
+                correct: false,
+              },
+              {
+                answer: 'glorioso 3',
+                correct: false,
+              },
+              {
+                answer: 'Torres',
+                correct: true,
+              },
+            ],
+          },
+        ];
+        
+        // substituição do quizz para a primeira pergunta
+        function init() {
+          // criar primeira pergunta
+          createQuestion(0);
+        }
+        
+        // cria uma pergunta
+        function createQuestion(i) {
+          // limpar questão anterior
+          const oldButtons = answerBox.querySelectorAll('button');
+          oldButtons.forEach((btn) => {
+            btn.remove();
+          });
+        
+          // alterar texto da pergunta
+          const questionText = question.querySelector('#question-text');
+          const questionNumber = question.querySelector('#question-number');
+        
+          questionText.textContent = questions[i].question;
+          questionNumber.textContent = i + 1;
+        
+          // inserir alternativas
+          questions[i].answers.forEach((answer, i) => {
+            // cria template botão quizz
+            const answerTemplate = document.querySelector('.answer-template').cloneNode(true);
+        
+            const letterBtn = answerTemplate.querySelector('.btn-letter');
+            const answerText = answerTemplate.querySelector('.question-answer');
+        
+            letterBtn.textContent = letters[i];
+            answerText.textContent = answer['answer'];
+        
+            answerTemplate.setAttribute('correct-answer', answer['correct']);
+        
+            // remover hide e template class
+            answerTemplate.classList.remove('hide');
+            answerTemplate.classList.remove('answer-template');
+        
+            // inserir alternativa na tela
+            answerBox.appendChild(answerTemplate);
+        
+            // inserir evento click no botão
+            answerTemplate.addEventListener('click', function () {
+              checkAnswer(this);
+            });
+          });
+        
+          // incrementar o número da questão
+          actualQuestion++;
+        }
+        
+        // verificar resposta do usuário
+        function checkAnswer(btn) {
+          // seleciona todos os botões
+          const buttons = answerBox.querySelectorAll('button');
+        
+          // verifica se resposta correta e add classe
+          buttons.forEach((button) => {
+            if (button.getAttribute('correct-answer') == 'true') {
+              button.classList.add('correct-answer');
+        
+              // checa se usuário acertou a pergunta
+              if (btn === button) {
+                // incremento dos pontos
+                points++;
+              }
+            } else {
+              button.classList.add('wrong-answer');
+            }
+          });
+        
+          // exibir próxima pergunta
+          nextQuestion();
+        }
+        
+        // exibe a pŕoxima pergunta no quizz
+        function nextQuestion() {
+          // timer para usuário ver as respostas
+          setTimeout(function () {
+            // verifica se ainda há perguntas
+            if (actualQuestion >= questions.length) {
+              // apresenta mensagem de sucesso
+              showSuccessMessage();
+              return;
+            }
+        
+            createQuestion(actualQuestion);
+          }, 1200);
+        }
+        
+        // exibe a tela final
+        function showSuccessMessage() {
+          hideOrShowQuizz();
+        
+          // trocar dados tela de sucesso
+          // calcular score
+          const score = ((points / questions.length) * 100).toFixed(2);
+          if (score < 4) {
+      window.alert("Você foi reprovado.");
+        window.location.href = 'index.html';
+    }
+          const displayScore = document.querySelector('#display-score span');
+          displayScore.textContent = score.toString();
+        
+          //alterar o número de perguntas corretas
+          const correctAnswers = document.querySelector('#correct-answers');
+          correctAnswers.textContent = points;
+        
+          // alterar o total de perguntas
+          const totalQuestions = document.querySelector('#questions-qty');
+          totalQuestions.textContent = questions.length;
+        }
+        
+        // mostra ou esonde o score
+        function hideOrShowQuizz() {
+          quizzContainer.classList.toggle('hide');
+          scoreContainer.classList.toggle('hide');
+        }
+        // reiniciar quizz
+        const restartBtn = document.querySelector('#restart');
+        restartBtn.addEventListener('click', function () {
+          //zerar jogo
+          actualQuestion = 0;
+          points = 0;
+          hideOrShowQuizz();
+          init();
+        });
+        
+        // inicialização do quizz
+        init();
+        let tempoRestante = 120;
+
+    // Atualiza o temporizador a cada segundo
+    const interval = setInterval(() => {
+        // Calcula minutos e segundos
+        const minutos = Math.floor(tempoRestante / 60);
+        const segundos = tempoRestante % 60;
+
+        // Exibe o temporizador
+        document.getElementById('timer').innerText = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+// exibe a tela final
+function showSuccessMessage() {
+    hideOrShowQuizz();
+
+    // trocar dados tela de sucesso
+    // calcular score
+    const score = ((points / questions.length) * 100).toFixed(2);
+
+    const displayScore = document.querySelector('#display-score span');
+    displayScore.textContent = score.toString();
+
+    //alterar o número de perguntas corretas
+    const correctAnswers = document.querySelector('#correct-answers');
+    correctAnswers.textContent = points;
+
+    // alterar o total de perguntas
+    const totalQuestions = document.querySelector('#questions-qty');
+    totalQuestions.textContent = questions.length;
+
+    // Adiciona a condicional de redirecionamento
+    if (score < 60) {
+      window.alert("Você foi reprovado.")
+        window.location.href = 'index.html';
+        
+    }
+}
+
+        // Verifica se o tempo chegou a zero
+        if (tempoRestante === 0) {
+            // Redireciona o usuário para outro site
+            window.location.href = 'index.html';
+            window.alert("você perdeu!")
+            // Limpa o intervalo para parar a contagem regressiva
+            clearInterval(interval);
+        } else {
+            // Decrementa o tempo restante
+            tempoRestante--;
+        }
+    }, 1000);
+        </script>
+  </body>
+</html>

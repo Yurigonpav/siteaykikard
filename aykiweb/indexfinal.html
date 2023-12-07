@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parabéns!</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            transition: all 0.7s ease;
+        }
+
+        #parabens {
+            text-align: center;
+        }
+
+      
+        .background2 {
+            background-image: url(mantrao.jpg);
+            background-size: 1500px 700px;
+        }
+
+       
+        #botaoSecreto {
+            background-color: rgba(255, 255, 255, 0.13);
+            border: none;
+            text-align: center;
+        }
+        #botaoSecreto:hover {
+          color: darkred;            
+        }
+    </style>
+</head>
+<body>
+
+    <div id="parabens">
+        <h1>Parabéns!</h1>
+        <p>Você é um especialista em aykikard 😎</p>
+        <img src="coczito.png" style="height: 200px;">
+    </div>
+
+    <button id="botaoSecreto" onclick="mudarBackground()">Boo!</button>
+
+    <script>
+        function mudarBackground() {
+            document.body.classList.toggle('background2');
+        }
+    </script>
+
+</body>
+</html>

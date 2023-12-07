@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        canvas {
+            display: block;
+            background-color: #e5e5e5;
+            margin: auto;
+        }
+    </style>
+    <title>Aykijump</title>
+</head>
+<body>
+    <h1>Colete as joias do tempo</h1>
+    <p>Para avançar, você precisa pegar os fragmentos das joias do tempo.</p>
+    <p>Fragmentos azuis e vermelhos coletados: <span id="starCount">0</span></p>
+    <p>Vidas restantes: <span id="lifeCount">3</span></p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const canvas = document.getElementById("gameCanvas");
+            const ctx = canvas.getContext("2d");
+
+            const birdImage = new Image();
+            birdImage.src = 'bird.png';
+
+            let bird = { x: 50, y: canvas.height / 2, width: 50, height: 50, speedY: 0, lives: 3 };
+            let gravity = 0.5;
+            let pipes = [];
+            let stars = [];
+            let blueStars = [];
+            let obstacles = [];
+            let dangers = [];
+            let score = 0;
+            let starCount = 0;
+
+            function drawBird() {
+                ctx.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+            }
+
+            function drawPipe(pipe) {
+                ctx.fillStyle = "#808080";
+                ctx.fillRect(pipe.x, pipe.y, pipe.width, pipe.height);
+            }
+
+            function drawStar(star) {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "#FF0000";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function drawBlueStar(blueStar) {
+                ctx.beginPath();
+                ctx.arc(blueStar.x, blueStar.y, blueStar.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "#0000FF"; // Cor azul
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function drawObstacle(obstacle) {
+                ctx.fillStyle = "#484d50";
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            }
+
+            function drawDanger(danger) {
+                ctx.beginPath();
+                ctx.arc(danger.x, danger.y, danger.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "#808080";
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function moveBird() {
+                bird.y += bird.speedY;
+                bird.speedY += gravity;
+
+                if (bird.y + bird.height > canvas.height) {
+                    bird.y = canvas.height - bird.height;
+                    bird.speedY = 0;
+                }
+            }
+
+            function generatePipe() {
+                let pipeHeight = Math.random() * 200 + 50;
+                pipes.push({ x: canvas.width, y: canvas.height - pipeHeight, width: 50, height: pipeHeight });
+            }
+
+            function generateStar() {
+                let starRadius = 10;
+                stars.push({ x: Math.random() * (canvas.width - 2 * starRadius) + starRadius, y: Math.random() * (canvas.height - 2 * starRadius) + starRadius, radius: starRadius });
+            }
+
+            function generateBlueStar() {
+                let blueStarRadius = 10;
+                blueStars.push({ x: Math.random() * (canvas.width - 2 * blueStarRadius) + blueStarRadius, y: Math.random() * (canvas.height - 2 * blueStarRadius) + blueStarRadius, radius: blueStarRadius });
+            }
+
+            function generateObstacle() {
+                let obstacleHeight = 30;
+                obstacles.push({ x: canvas.width, y: canvas.height - obstacleHeight, width: 20, height: obstacleHeight });
+            }
+
+            function generateDanger() {
+                let dangerRadius = 6;
+                dangers.push({ x: Math.random() * (canvas.width - 2 * dangerRadius) + dangerRadius, y: Math.random() * (canvas.height - 2 * dangerRadius) + dangerRadius, radius: dangerRadius });
+            }
+
+            function movePipes() {
+                for (let i = pipes.length - 1; i >= 0; i--) {
+                    pipes[i].x -= 2;
+
+                    if (pipes[i].x + pipes[i].width < 0) {
+                        pipes.splice(i, 1);
+                    }
+                }
+            }
+
+            function moveStars() {
+                for (let i = stars.length - 1; i >= 0; i--) {
+                    stars[i].x -= 2;
+
+                    if (stars[i].x - stars[i].radius < 0) {
+                        stars.splice(i, 1);
+                    }
+                }
+            }
+
+            function moveBlueStars() {
+                for (let i = blueStars.length - 1; i >= 0; i--) {
+                    blueStars[i].x -= 2;
+
+                    if (blueStars[i].x - blueStars[i].radius < 0) {
+                        blueStars.splice(i, 1);
+                    }
+                }
+            }
+
+            function moveObstacles() {
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    obstacles[i].x -= 2;
+
+                    if (obstacles[i].x + obstacles[i].width < 0) {
+                        obstacles.splice(i, 1);
+                    }
+                }
+            }
+
+            function moveDangers() {
+                for (let i = dangers.length - 1; i >= 0; i--) {
+                    dangers[i].x -= 1; // Diminuir velocidade
+
+                    if (dangers[i].x - dangers[i].radius < 0) {
+                        dangers.splice(i, 1);
+                    }
+                }
+            }
+
+            function checkCollision() {
+                for (let i = 0; i < pipes.length; i++) {
+                    if (
+                        bird.x + bird.width > pipes[i].x &&
+                        bird.x < pipes[i].x + pipes[i].width &&
+                        bird.y + bird.height > pipes[i].y &&
+                        bird.y < pipes[i].y + pipes[i].height
+                    ) {
+                        // Colisão com pipes, reiniciar o jogo
+                        resetGame();
+                    }
+                }
+
+                for (let i = 0; i < stars.length; i++) {
+                    if (
+                        bird.x + bird.width > stars[i].x - stars[i].radius &&
+                        bird.x < stars[i].x + stars[i].radius &&
+                        bird.y + bird.height > stars[i].y - stars[i].radius &&
+                        bird.y < stars[i].y + stars[i].radius
+                    ) {
+                        score++;
+                        starCount++;
+                        stars.splice(i, 1);
+                        document.getElementById("starCount").innerText = starCount;
+                    }
+                }
+
+                for (let i = 0; i < blueStars.length; i++) {
+                    if (
+                        bird.x + bird.width > blueStars[i].x - blueStars[i].radius &&
+                        bird.x < blueStars[i].x + blueStars[i].radius &&
+                        bird.y + bird.height > blueStars[i].y - blueStars[i].radius &&
+                        bird.y < blueStars[i].y + blueStars[i].radius
+                    ) {
+                        score += 1;
+                        starCount++;
+                        blueStars.splice(i, 1);
+                        document.getElementById("starCount").innerText = starCount;
+                    }
+                }
+
+                for (let i = 0; i < obstacles.length; i++) {
+                    if (
+                        bird.x + bird.width > obstacles[i].x &&
+                        bird.x < obstacles[i].x + obstacles[i].width &&
+                        bird.y + bird.height > obstacles[i].y
+                    ) {
+                        // Colisão com obstáculo, reiniciar o jogo
+                        resetGame();
+                    }
+                }
+
+                for (let i = 0; i < dangers.length; i++) {
+                    if (
+                        bird.x + bird.width > dangers[i].x - dangers[i].radius &&
+                        bird.x < dangers[i].x + dangers[i].radius &&
+                        bird.y + bird.height > dangers[i].y - dangers[i].radius &&
+                        bird.y < dangers[i].y + dangers[i].radius
+                    ) {
+                        // Colisão com perigo, perder uma vida
+                        bird.lives--;
+                        document.getElementById("lifeCount").innerText = bird.lives;
+
+                        if (bird.lives === 0) {
+                            // Sem vidas restantes, reiniciar o jogo
+                            resetGame();
+                        } else {
+                            // Remover o perigo e continuar o jogo
+                            dangers.splice(i, 1);
+                        }
+                    }
+                }
+                if (score >= 20) {
+                    window.location.href = "indexp5.html";
+                }
+            }
+
+            function resetGame() {
+                bird = { x: 50, y: canvas.height / 2, width: 40, height: 40, speedY: 0, lives: 3 };
+                pipes = [];
+                stars = [];
+                blueStars = [];
+                obstacles = [];
+                dangers = [];
+                score = 0;
+                starCount = 0;
+                document.getElementById("starCount").innerText = starCount;
+                document.getElementById("lifeCount").innerText = bird.lives;
+            }
+
+            function gameLoop() {
+                moveBird();
+                movePipes();
+                moveStars();
+                moveBlueStars();
+                moveObstacles();
+                moveDangers();
+                checkCollision();
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                drawBird();
+
+                // Desenhar pipes
+                for (let i = 0; i < pipes.length; i++) {
+                    drawPipe(pipes[i]);
+                }
+
+                // Desenhar estrelas
+                for (let i = 0; i < stars.length; i++) {
+                    drawStar(stars[i]);
+                }
+
+                // Desenhar estrelas azuis
+                for (let i = 0; i < blueStars.length; i++) {
+                    drawBlueStar(blueStars[i]);
+                }
+
+                // Desenhar obstáculos
+                for (let i = 0; i < obstacles.length; i++) {
+                    drawObstacle(obstacles[i]);
+                }
+
+                // Desenhar perigos
+                for (let i = 0; i < dangers.length; i++) {
+                    drawDanger(dangers[i]);
+                }
+
+                // Gerar pipes em intervalos regulares
+                if (Math.random() < 0.01) {
+                    generatePipe();
+                }
+
+                // Gerar estrelas em intervalos regulares
+                if (Math.random() < 0.005) {
+                    generateStar();
+                }
+
+                // Gerar estrelas azuis em intervalos regulares
+                if (Math.random() < 0.005) {
+                    generateBlueStar();
+                }
+
+                // Gerar obstáculos em intervalos regulares
+                if (Math.random() < 0.01 && Math.floor(Date.now() / 1000) % 10 === 0) {
+                    generateObstacle();
+                }
+
+                // Gerar perigos em intervalos regulares
+                if (Math.random() < 0.002) { // Menos frequente
+                    generateDanger();
+                }
+
+                requestAnimationFrame(gameLoop);
+            }
+
+            document.addEventListener("keydown", function (event) {
+                if (event.code === "Space") {
+                    bird.speedY = -8; // Força do pulo
+                }
+            });
+
+            birdImage.onload = function () {
+                gameLoop();
+            };
+        });
+    </script>
+</body>
+</html>

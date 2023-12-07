@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organize</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #container {
+      position: relative;
+      height: 150px;
+    }
+
+    .draggable {
+      position: absolute;
+      cursor: grab;
+    }
+
+    .target {
+      background-color: rgba(57, 57, 57, 0.021);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 200px;
+      border: 2px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Organize suas cartas na sua mão em ordem numérica decrescente. (coloque da maior para menor)</h1>
+
+  <div id="container">
+    <img class="draggable" src="darkness.jpg" width="150px" alt="Imagem Arrastável" id="204">
+    <img class="draggable" src="fairy.jpg" width="150px" alt="Imagem Arrastável" id="101">
+    <img class="draggable" src="metal.jpg" width="150px" alt="Imagem Arrastável" id="112">
+    <img class="draggable" src="grass.jpg" width="150px" alt="Imagem Arrastável" id="136">
+    <img class="draggable" src="fighting.jpg" width="150px" alt="Imagem Arrastável" id="21">
+    <img class="draggable" src="double.jpg" width="150px" alt="Imagem Arrastável" id="183">
+    <img class="draggable" src="fire.jpg" width="150px" alt="Imagem Arrastável" id="144">
+    <img class="draggable" src="lightning.jpg" width="150px" alt="Imagem Arrastável" id="93">
+    <img class="draggable" src="psychic.jpg" width="150px" alt="Imagem Arrastável" id="180">
+    <img class="draggable" src="water.jpg" width="150px" alt="Imagem Arrastável" id="64">
+  </div>
+  <div id="targetSquare" class="target">Coloque aqui</div>
+
+  <script>
+    var draggableElements = document.querySelectorAll('.draggable');
+    var targetSquare = document.getElementById('targetSquare');
+    var correctElements = ['204', '183', '180', '144', '136', '112', '101', '93', '64', '21'];
+    var elementsInTarget = [];
+
+    draggableElements.forEach(function (element) {
+      element.addEventListener('mousedown', function (e) {
+        dragStart(e, element);
+      });
+    });
+
+    function dragStart(e, element) {
+      var offsetX = e.clientX - element.getBoundingClientRect().left;
+      var offsetY = e.clientY - element.getBoundingClientRect().top;
+
+      element.style.cursor = 'grabbing';
+
+      function dragMove(event) {
+        var x = event.clientX - offsetX;
+        var y = event.clientY - offsetY;
+
+        element.style.left = x + 'px';
+        element.style.top = y + 'px';
+
+        checkCollision(element);
+      }
+
+      function dragEnd() {
+        element.style.cursor = 'grab';
+        document.removeEventListener('mousemove', dragMove);
+        document.removeEventListener('mouseup', dragEnd);
+      }
+
+      document.addEventListener('mousemove', dragMove);
+      document.addEventListener('mouseup', dragEnd);
+    }
+
+    function checkCollision(element) {
+      var elementRect = element.getBoundingClientRect();
+      var targetRect = targetSquare.getBoundingClientRect();
+
+      if (
+        elementRect.left < targetRect.right &&
+        elementRect.right > targetRect.left &&
+        elementRect.top < targetRect.bottom &&
+        elementRect.bottom > targetRect.top
+      ) {
+        if (!elementsInTarget.includes(element.id)) {
+          elementsInTarget.push(element.id);
+          checkCorrectElements();
+        }
+      } else {
+        elementsInTarget = elementsInTarget.filter(item => item !== element.id);
+      }
+    }
+
+    function checkCorrectElements() {
+      if (
+        elementsInTarget.length === correctElements.length &&
+        elementsInTarget.every((id, index) => id === correctElements[index])
+      ) {
+        exibirMensagemCorreta();
+      }
+    }
+
+    function exibirMensagemCorreta() {
+      window.location.href = 'index7.html';
+    }
+  </script>
+</body>
+</html>

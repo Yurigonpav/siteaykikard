@@ -1,0 +1,52 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/style.css">
+    <title>Aykikard</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Aykikard</div>
+            <nav>
+                <ul>
+                    <li><a href="https://discord.gg/wQXmF3SPeR" target="_blank" class="active">Discord</a></li>
+                    <li><a href="https://www.youtube.com/@aykikard" target="_blank">Youtube</a></li>
+                    <li><a href="https://www.catarse.me/aykikardz" target="_blank">Catarse</a></li>
+                    <li><a href="https://www.instagram.com/aykikard/" target="_blank">Instagram</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="banner">
+                <h1><span class="corp">Aykikard -</span><span class="cors"> TCG Card Game</span></h1>
+                <p>Aykikard é um jogo de cartas que se passa dentro do mundo dos sonhos, é um projeto que já desenvolvo a pelo menos uns 10 anos e que faço com muito carinho, sendo responsável por tudo: desenhos, pintura, edição no pc, elaboração de regras, balanceamento, além de uma histórica única para cada personagem de cada carta!
+                </p>
+                <div class="container">
+                    <div id="text-container"></div>
+                    <button id="add-text-btn" onclick="addText()" onclick="removeButton()">Detalhes do desafio</button>
+                </div>
+                <a href="indexp2.html" class="cta-button">Iniciar o desafio!</a>
+                <div class="img-container">
+                   <a href="https://youtu.be/tH9xMPrSt3E?si=cq1ZAyt07YeHYXMo"> <img title="Ir para o video de apresentação" class="imgfloat" src="./assets/img/floatimg.jpg" alt="Imagem Flutuante" height="160px"></a>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>let isTextAdded = false; 
+        function addText() {
+            if (!isTextAdded) {
+                const textContainer = document.getElementById("text-container");
+                const newText = document.createElement("p");
+                newText.textContent = " desafio consiste em 3 mini-games e 15 perguntas sobre Aykikard, sendo 5 perguntas fáceis, 5 intermediarias e 5 dificeis.";
+                textContainer.appendChild(newText);
+                isTextAdded = true;
+                const addButton = document.getElementById("add-text-btn");
+                addButton.remove();
+            }
+        }
+        </script>
+</body>
+</html>
